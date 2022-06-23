@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  database:
+    container_name: database
+    image: mariadb:10.2
+    env_file: .env
+    volumes:
+      - ./database/data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+    volumes:
+      - ./backend/project:/root/project
+    entrypoint: python /root/project/manage.py
+    command: runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file: .env
+    depends_on:
+      - database

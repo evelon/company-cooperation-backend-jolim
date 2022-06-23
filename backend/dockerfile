@@ -1,0 +1,27 @@
+FROM ubuntu:18.04
+LABEL maintainer "jolim <ezemango@gmail.com>"
+RUN apt update && apt upgrade -y
+
+RUN apt install -y wget
+
+WORKDIR /tmp
+
+# Download python3.9.1
+RUN wget https://www.python.org/ftp/python/3.9.1/Python-3.9.1.tgz
+RUN tar -xvzf Python-3.9.1.tgz
+
+# Install dependencies and python
+RUN apt dist-upgrade
+RUN apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libsqlite3-dev
+RUN ./Python-3.9.1/configure --enable-loadable-sqlite-extensions
+RUN make install
+
+WORKDIR /
+
+# Make softlink of python and pip
+RUN ln -s /usr/local/bin/python3.9 /usr/local/bin/python
+RUN ln -s /usr/local/bin/pip3.9 /usr/bin/pip
+
+# Install packages
+COPY ./requirements.txt /tmp
+RUN pip install -r /tmp/requirements.txt
