@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from qr_management import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('create/', views.test_create),
+    path('read/', views.test_read),
+    path('update/', views.test_update),
+    path('delete/', views.test_delete)
 ]

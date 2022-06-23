@@ -7,4 +7,4 @@ class LocationQrCode(models.Model):
     owner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     latitude = models.FloatField(null=False)
     longitude = models.FloatField(null=False)
-    validity = models.BooleanField(default=True)
+    validity = models.BooleanField(default=True, null=False)
