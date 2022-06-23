@@ -3,3 +3,4 @@ venv
 database/data
 !database/data/db.opt
 .vscode
+%%*
