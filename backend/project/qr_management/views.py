@@ -14,10 +14,10 @@ def test_read(request):
     all_location_qr_code = LocationQrCode.objects.all()
     list = ''
     for location_qr_code in all_location_qr_code:
-        list = f'{location_qr_code.id}\towner:{location_qr_code.owner}' + \
+        list += f'{location_qr_code.id}\towner:{location_qr_code.owner}' + \
             f'\tlatitude:{location_qr_code.latitude}' + \
             f'\tlongitude:{location_qr_code.longitude}' + \
-            f'\tvalidity:{location_qr_code.validity}\n'
+            f'\tvalidity:{location_qr_code.validity}<br>'
     return HttpResponse(list)
 
 def test_update(request):
