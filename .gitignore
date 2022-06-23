@@ -165,6 +165,7 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
+**/__pycache__
 database/data
 .vscode
 %%*
