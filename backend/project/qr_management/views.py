@@ -1,43 +1,42 @@
 from random import choice, random
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+
+from .serializer import LocationQrCodeSerializer
 from .models import LocationQrCode
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 
-def test_create(request):
-    lat = ( random() - 0.5 ) * 90
-    lon = ( random() - 0.5 ) * 180
-    location_qr_code = LocationQrCode(latitude=lat, longitude=lon)
-    location_qr_code.save()
-    return HttpResponse('success')
 
-def test_read(request):
-    all_location_qr_code = LocationQrCode.objects.all()
-    list = ''
-    for location_qr_code in all_location_qr_code:
-        list += f'{location_qr_code.id}\towner:{location_qr_code.owner}' + \
-            f'\tlatitude:{location_qr_code.latitude}' + \
-            f'\tlongitude:{location_qr_code.longitude}' + \
-            f'\tvalidity:{location_qr_code.validity}<br>'
-    return HttpResponse(list)
+class LocationAPIView(APIView):
+    def get(self, request):
+        serializer = LocationQrCodeSerializer(LocationQrCode.objects.all(), many=True)
+        return JsonResponse({'data': serializer.data}, status=200)
 
-def test_update(request):
-    all_location_qr_code = LocationQrCode.objects.all()
-    if len(all_location_qr_code) == 0:
-        return HttpResponse('table is empty')
-    location_qr_code = choice(all_location_qr_code)
-    location_qr_code.latitude = ( random() - 0.5 ) * 90
-    location_qr_code.longitude = ( random() - 0.5 ) * 180
-    location_qr_code.save()
-    info = f'{location_qr_code.id}\towner:{location_qr_code.owner}' + \
-            f'\tlatitude:{location_qr_code.latitude}' + \
-            f'\tlongitude:{location_qr_code.longitude}' + \
-            f'\tvalidity:{location_qr_code.validity}\n'
-    return HttpResponse(info)
+    def post(self, request):
+        lat = ( random() - 0.5 ) * 90
+        lon = ( random() - 0.5 ) * 180
+        location_qr_code = LocationQrCode(latitude=lat, longitude=lon)
+        location_qr_code.save()
+        serializer = LocationQrCodeSerializer(location_qr_code)
+        return JsonResponse({'data': serializer.data}, status=201)
 
+    def patch(self, request):
+        all_location_qr_code = LocationQrCode.objects.all()
+        if len(all_location_qr_code) == 0:
+            return JsonResponse({'error': 'table is empty'}, status=409)
+        location_qr_code = choice(all_location_qr_code)
+        location_qr_code.latitude = ( random() - 0.5 ) * 90
+        location_qr_code.longitude = ( random() - 0.5 ) * 180
+        location_qr_code.save()
+        serializer = LocationQrCodeSerializer(location_qr_code)
+        return JsonResponse({'data': serializer.data}, status=200)
+
+@api_view(['POST'])
 def test_delete(request):
     all_location_qr_code = LocationQrCode.objects.all()
     if len(all_location_qr_code) == 0:
-        return HttpResponse('table is empty')
+        return JsonResponse({'error': 'table is empty'}, status=409)
     location_qr_code = choice(all_location_qr_code)
     location_qr_code.delete()
-    return HttpResponse('success')
+    return HttpResponse(status=204)

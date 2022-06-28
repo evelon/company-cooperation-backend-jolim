@@ -19,8 +19,6 @@ from qr_management import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('create/', views.test_create),
-    path('read/', views.test_read),
-    path('update/', views.test_update),
-    path('delete/', views.test_delete)
+    path('locations', views.LocationAPIView.as_view()),
+    path('locations/random-delete', views.test_delete)
 ]
