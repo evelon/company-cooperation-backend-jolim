@@ -15,13 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from qr_management.views import LocationIdAPIView
 from qr_management import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('create/<int:location_id>/', views.test_create),
-    path('read/', views.test_read_plain),
-    path('read/<int:location_id>/', views.test_read),
-    path('update/<int:location_id>/', views.test_update),
-    path('delete/<int:location_id>/', views.test_delete),
+    path('locations', views.LocationAPIView.as_view()),
+    path('locations/<int:location_id>', views.LocationIdAPIView.as_view()),
 ]
