@@ -22,10 +22,10 @@ class LocationAPIView(APIView):
         return JsonResponse({'data': serializer.data}, status=201)
 
     def patch(self, request):
-        all_location_qr_code = LocationQrCode.objects.all()
-        if len(all_location_qr_code) == 0:
+        location_qr_codes = LocationQrCode.objects.order_by('?')
+        if len(location_qr_codes) == 0:
             return JsonResponse({'error': 'table is empty'}, status=409)
-        location_qr_code = choice(all_location_qr_code)
+        location_qr_code = location_qr_codes[0]
         location_qr_code.latitude = ( random() - 0.5 ) * 90
         location_qr_code.longitude = ( random() - 0.5 ) * 180
         location_qr_code.save()
@@ -34,9 +34,9 @@ class LocationAPIView(APIView):
 
 @api_view(['POST'])
 def test_delete(request):
-    all_location_qr_code = LocationQrCode.objects.all()
-    if len(all_location_qr_code) == 0:
+    location_qr_codes = LocationQrCode.objects.order_by('?')
+    if len(location_qr_codes) == 0:
         return JsonResponse({'error': 'table is empty'}, status=409)
-    location_qr_code = choice(all_location_qr_code)
+    location_qr_code = location_qr_codes[0]
     location_qr_code.delete()
     return HttpResponse(status=204)
