@@ -169,3 +169,4 @@ cython_debug/
 database/data
 .vscode
 %%*
+*.sqlite*

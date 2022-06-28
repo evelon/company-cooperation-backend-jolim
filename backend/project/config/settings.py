@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': env('MARIADB_DATABASE'),
         'USER': env('MARIADB_USER'),
         'PASSWORD': env('MARIADB_PASSWORD'), # mariaDB 설치 시 입력한 root 비밀번호 입력
-        'HOST': 'database',
+        'HOST': env('DATABASE_HOST'),
         'PORT': 3306,
     }
 }
