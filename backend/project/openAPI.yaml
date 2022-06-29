@@ -1,0 +1,109 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: 'Locations'
+  license:
+    name: MIT
+servers:
+  - url: 'localhost:8000'
+paths:
+  /locations:
+    get:
+      summary: read QR code information
+      operationId: getLocations
+      tags:
+        - qr-code
+      responses:
+        '200':
+          description: list of QR code information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/qr-code-information'
+    post:
+      summary: create QR code information
+      operationId: createLocation
+      tags:
+        - qr-code
+      responses:
+        '201':
+          description: QR code information created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/qr-code-information'
+    patch:
+      summary: update random QR code information
+      operationId: updateLocation
+      tags:
+        - qr-code
+      responses:
+        '200':
+          description: Random QR code information is updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/qr-code-information'
+        '409':
+          description: There is no information to update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                example:
+                  error: table is empty
+  /locations/random-delete:
+    post:
+      summary: delete random QR code information
+      operationId: deleteLocation
+      tags:
+        - qr-code
+      responses:
+        '204':
+          description: random QR code information is deleted
+        '409':
+          description: There is no information to update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                example:
+                  error: table is empty
+components:
+  schemas:
+    qr-code-information:
+      type: object
+      required:
+        - id
+        - latitude
+        - longitude
+        - validity
+      properties:
+        id:
+          type: string
+          format: uuid
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        validity:
+          type: boolean
+        owner:
+          type: number
+          format: int32
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
