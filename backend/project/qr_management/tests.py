@@ -3,13 +3,15 @@ from rest_framework.test import APIClient
 from .models import LocationQrCode
 import json
 
+
 class TestLocationsViews(TestCase):
+    client = APIClient()
+
     def setUp(self):
         LocationQrCode.objects.create(latitude=33.3, longitude=66.6)
-        self.client = APIClient()
 
     def test_get(self):
-        response = self.client.get('/locations')
+        response = TestLocationsViews.client.get('/locations')
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         self.assertIn('data', content)
@@ -24,7 +26,7 @@ class TestLocationsViews(TestCase):
                 self.assertIn('owner', data[0])
 
     def test_post(self):
-        response = self.client.post('/locations')
+        response = TestLocationsViews.client.post('/locations')
         self.assertEqual(response.status_code, 201)
         content = json.loads(response.content)
         self.assertIn('data', content)
@@ -39,7 +41,7 @@ class TestLocationsViews(TestCase):
         self.assertEqual(len(location_qr_codes), 2)
 
     def test_patch(self):
-        response = self.client.patch('/locations')
+        response = TestLocationsViews.client.patch('/locations')
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         self.assertIn('data', content)
@@ -54,7 +56,7 @@ class TestLocationsViews(TestCase):
         self.assertEqual(len(location_qr_codes), 1)
 
     def test_random_delete(self):
-        response = self.client.post('/locations/random-delete')
+        response = TestLocationsViews.client.post('/locations/random-delete')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(response.content, b'')
         location_qr_codes = LocationQrCode.objects.all()
