@@ -4,7 +4,9 @@ from django.shortcuts import render
 from .serializer import LocationQrCodeSerializer
 from .models import LocationQrCode
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema, status
 from drf_yasg import openapi
 
@@ -22,6 +24,7 @@ LocationQrCodeSchema = openapi.Schema(
 )
 
 class LocationAPIView(APIView):
+    renderer_classes = [JSONRenderer]
 
     @swagger_auto_schema(
         operation_summary='read QR code information',
@@ -39,13 +42,16 @@ class LocationAPIView(APIView):
     )
     def get(self, request):
         serializer = LocationQrCodeSerializer(LocationQrCode.objects.all(), many=True)
-        return JsonResponse({'data': serializer.data}, status=200)
+        return Response({'data': serializer.data}, status=200)
 
     @swagger_auto_schema(
         operation_summary='create QR code information',
-        operation_id='createLocation',
+        operation_id='createRandomLocation',
         tags=['locations'],
-        responses={status.HTTP_201_CREATED: LocationQrCodeSchema}
+        responses={status.HTTP_201_CREATED: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={'data': LocationQrCodeSchema}
+        )}
     )
     def post(self, request):
         lat = ( random() - 0.5 ) * 90
@@ -53,14 +59,17 @@ class LocationAPIView(APIView):
         location_qr_code = LocationQrCode(latitude=lat, longitude=lon)
         location_qr_code.save()
         serializer = LocationQrCodeSerializer(location_qr_code)
-        return JsonResponse({'data': serializer.data}, status=201)
+        return Response({'data': serializer.data}, status=201)
 
     @swagger_auto_schema(
         operation_summary='update random QR code information',
-        operation_id='updateLocation',
+        operation_id='updateRandomLocation',
         tags=['locations'],
         responses={
-            status.HTTP_200_OK: LocationQrCodeSchema,
+            status.HTTP_200_OK: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'data': LocationQrCodeSchema}
+            ),
             status.HTTP_409_CONFLICT: openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
@@ -75,18 +84,18 @@ class LocationAPIView(APIView):
     def patch(self, request):
         location_qr_codes = LocationQrCode.objects.order_by('?')
         if len(location_qr_codes) == 0:
-            return JsonResponse({'error': 'table is empty'}, status=409)
+            return Response({'error': 'table is empty'}, status=409)
         location_qr_code = location_qr_codes[0]
         location_qr_code.latitude = ( random() - 0.5 ) * 90
         location_qr_code.longitude = ( random() - 0.5 ) * 180
         location_qr_code.save()
         serializer = LocationQrCodeSerializer(location_qr_code)
-        return JsonResponse({'data': serializer.data}, status=200)
+        return Response({'data': serializer.data}, status=200)
 
 @swagger_auto_schema(
     method='POST',
     operation_summary='delete random QR code information',
-    operation_id='deleteLocation',
+    operation_id='deleteRandomLocation',
     tags=['locations'],
     responses={
         status.HTTP_204_NO_CONTENT: '',
@@ -102,15 +111,38 @@ class LocationAPIView(APIView):
     }
 )
 @api_view(['POST'])
+@renderer_classes([JSONRenderer])
 def test_delete(request):
     location_qr_codes = LocationQrCode.objects.order_by('?')
     if len(location_qr_codes) == 0:
-        return JsonResponse({'error': 'table is empty'}, status=409)
+        return Response({'error': 'table is empty'}, status=409)
     location_qr_code = location_qr_codes[0]
     location_qr_code.delete()
-    return HttpResponse(status=204)
+    return Response(status=204)
 
 class LocationIdAPIView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    @swagger_auto_schema(
+        operation_summary='read QR code information of corresponding id',
+        operation_id='getLocation',
+        tags=['locationId'],
+        responses={
+            status.HTTP_201_CREATED: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'data': LocationQrCodeSchema}
+            ),
+            status.HTTP_409_CONFLICT: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'error': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='No matching object',
+                    )
+                }
+            )
+        }
+    )
     def get(self, request, location_id):
         location_qr_codes = LocationQrCode.objects.filter(id=location_id)
         if len(location_qr_codes) == 0:
@@ -118,6 +150,26 @@ class LocationIdAPIView(APIView):
         serializer = LocationQrCodeSerializer(location_qr_codes[0])
         return JsonResponse({'data': serializer.data}, status=200)
 
+    @swagger_auto_schema(
+        operation_summary='create QR code information of corresponding id',
+        operation_id='createLocation',
+        tags=['locationId'],
+        responses={
+            status.HTTP_201_CREATED: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'data': LocationQrCodeSchema}
+            ),
+            status.HTTP_409_CONFLICT: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'error': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='The id is preoccupied',
+                    )
+                }
+            )
+        }
+    )
     def post(self, request, location_id):
         presence = LocationQrCode.objects.filter(id=location_id)
         if len(presence) != 0:
@@ -129,10 +181,30 @@ class LocationIdAPIView(APIView):
         serializer = LocationQrCodeSerializer(location_qr_code)
         return JsonResponse({'data': serializer.data}, status=201)
 
+    @swagger_auto_schema(
+        operation_summary='update QR code information of corresponding id',
+        operation_id='updateLocation',
+        tags=['locationId'],
+        responses={
+            status.HTTP_201_CREATED: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'data': LocationQrCodeSchema}
+            ),
+            status.HTTP_409_CONFLICT: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'error': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='No matching object',
+                    )
+                }
+            )
+        }
+    )
     def patch(self, request, location_id):
         location_qr_codes = LocationQrCode.objects.filter(id=location_id)
         if len(location_qr_codes) == 0:
-            return JsonResponse({'error': 'No matching object.'}, status=409)
+            return JsonResponse({'error': 'No matching object'}, status=409)
         location_qr_code = location_qr_codes.first()
         location_qr_code.latitude = ( random() - 0.5 ) * 90
         location_qr_code.longitude = ( random() - 0.5 ) * 180
@@ -140,10 +212,27 @@ class LocationIdAPIView(APIView):
         serializer = LocationQrCodeSerializer(location_qr_code)
         return JsonResponse({'data': serializer.data})
 
+    @swagger_auto_schema(
+        operation_summary='delete QR code information of corresponding id',
+        operation_id='deleteLocation',
+        tags=['locationId'],
+        responses={
+            status.HTTP_204_NO_CONTENT: '',
+            status.HTTP_409_CONFLICT: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'error': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='No matching object',
+                    )
+                }
+            )
+        }
+    )
     def delete(self, request, location_id):
         location_qr_codes = LocationQrCode.objects.filter(id=location_id)
         if len(location_qr_codes) == 0:
-            return JsonResponse({'error': 'No matching object.'}, status=409)
+            return JsonResponse({'error': 'No matching object'}, status=409)
         location_qr_code = location_qr_codes.first()
         location_qr_code.delete()
         return HttpResponse(status=204)
