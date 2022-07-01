@@ -1,7 +1,7 @@
 from random import choice, random
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from .serializer import LocationQrCodeSerializer
+from .serializers import LocationQrCodeSerializer
 from .models import LocationQrCode
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, renderer_classes

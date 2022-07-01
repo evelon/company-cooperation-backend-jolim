@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="2bf23d17-df1e-4da1-8e2c-d933fafe2fdc" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/project/accounts/serializers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/project/accounts/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/company-cooperative-backend-jolim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/company-cooperative-backend-jolim.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/project/config/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/project/config/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/project/config/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/project/config/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/project/qr_management/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/project/qr_management/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/project/qr_management/serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/project/qr_management/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/project/qr_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/project/qr_management/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/project/qr_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/project/qr_management/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,14 +33,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="디폴트 작업">
@@ -37,10 +54,23 @@
       <option name="presentableId" value="Default" />
       <updated>1655955212256</updated>
       <workItem from="1655955214253" duration="226000" />
+      <workItem from="1656655780274" duration="1622000" />
+      <workItem from="1656657515960" duration="8717000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

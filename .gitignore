@@ -170,3 +170,4 @@ database/data
 .vscode
 %%*
 *.sqlite*
+.idea
