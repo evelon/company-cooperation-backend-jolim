@@ -1,6 +1,5 @@
-from random import choice, random
+from random import random
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
 from .serializers import LocationQrCodeSerializer
 from .models import LocationQrCode
 from rest_framework.views import APIView
@@ -9,6 +8,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema, status
 from drf_yasg import openapi
+
+from rest_framework.permissions import AllowAny
 
 
 LocationQrCodeSchema = openapi.Schema(
