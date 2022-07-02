@@ -4,14 +4,14 @@ from .models import LocationQrCode
 import json
 
 
-class TestLocationsViews(TestCase):
-    client = APIClient()
+class TestLocationsView(TestCase):
 
     def setUp(self):
+        self.client = APIClient()
         LocationQrCode.objects.create(latitude=33.3, longitude=66.6)
 
     def test_get(self):
-        response = TestLocationsViews.client.get('/locations')
+        response = self.client.get('/qr-code/locations')
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         self.assertIn('data', content)
@@ -26,25 +26,15 @@ class TestLocationsViews(TestCase):
                 self.assertIn('owner', data[0])
 
     def test_post(self):
-        response = TestLocationsViews.client.post('/locations')
+        response = self.client.post('/qr-code/locations')
         self.assertEqual(response.status_code, 201)
         content = json.loads(response.content)
         self.assertIn('data', content)
-        if 'data' in content:
-            data = content['data']
-            self.assertIn('id', data)
-            self.assertIn('latitude', data)
-            self.assertIn('longitude', data)
-            self.assertIn('validity', data)
-            self.assertIn('owner', data)
+        self.qr_code_content_validator(content)
         location_qr_codes = LocationQrCode.objects.all()
         self.assertEqual(len(location_qr_codes), 2)
 
-    def test_patch(self):
-        response = TestLocationsViews.client.patch('/locations')
-        self.assertEqual(response.status_code, 200)
-        content = json.loads(response.content)
-        self.assertIn('data', content)
+    def qr_code_content_validator(self, content):
         if 'data' in content:
             data = content['data']
             self.assertIn('id', data)
@@ -52,11 +42,18 @@ class TestLocationsViews(TestCase):
             self.assertIn('longitude', data)
             self.assertIn('validity', data)
             self.assertIn('owner', data)
+
+    def test_patch(self):
+        response = self.client.patch('/qr-code/locations')
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertIn('data', content)
+        self.qr_code_content_validator(content)
         location_qr_codes = LocationQrCode.objects.all()
         self.assertEqual(len(location_qr_codes), 1)
 
     def test_random_delete(self):
-        response = TestLocationsViews.client.post('/locations/random-delete')
+        response = self.client.post('/qr-code/locations/random-delete')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(response.content, b'')
         location_qr_codes = LocationQrCode.objects.all()

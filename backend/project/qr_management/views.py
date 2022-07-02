@@ -23,12 +23,13 @@ LocationQrCodeSchema = openapi.Schema(
     }
 )
 
+
 class LocationAPIView(APIView):
     renderer_classes = [JSONRenderer]
 
     @swagger_auto_schema(
         operation_summary='read QR code information',
-        operation_id='getLocations',
+        operation_id='locations_get',
         tags=['locations'],
         responses={status.HTTP_200_OK: openapi.Schema(
             type=openapi.TYPE_OBJECT,
@@ -38,7 +39,7 @@ class LocationAPIView(APIView):
                     items=LocationQrCodeSchema
                 )
             }
-        )}
+        )},
     )
     def get(self, request):
         serializer = LocationQrCodeSerializer(LocationQrCode.objects.all(), many=True)
@@ -46,16 +47,16 @@ class LocationAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary='create QR code information',
-        operation_id='createRandomLocation',
+        operation_id='random_location_create',
         tags=['locations'],
         responses={status.HTTP_201_CREATED: openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={'data': LocationQrCodeSchema}
-        )}
+        )},
     )
     def post(self, request):
-        lat = ( random() - 0.5 ) * 90
-        lon = ( random() - 0.5 ) * 180
+        lat = (random() - 0.5) * 90
+        lon = (random() - 0.5) * 180
         location_qr_code = LocationQrCode(latitude=lat, longitude=lon)
         location_qr_code.save()
         serializer = LocationQrCodeSerializer(location_qr_code)
@@ -63,7 +64,7 @@ class LocationAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary='update random QR code information',
-        operation_id='updateRandomLocation',
+        operation_id='random_location_update',
         tags=['locations'],
         responses={
             status.HTTP_200_OK: openapi.Schema(
@@ -86,16 +87,17 @@ class LocationAPIView(APIView):
         if len(location_qr_codes) == 0:
             return Response({'error': 'table is empty'}, status=409)
         location_qr_code = location_qr_codes[0]
-        location_qr_code.latitude = ( random() - 0.5 ) * 90
-        location_qr_code.longitude = ( random() - 0.5 ) * 180
+        location_qr_code.latitude = (random() - 0.5) * 90
+        location_qr_code.longitude = (random() - 0.5) * 180
         location_qr_code.save()
         serializer = LocationQrCodeSerializer(location_qr_code)
         return Response({'data': serializer.data}, status=200)
 
+
 @swagger_auto_schema(
     method='POST',
     operation_summary='delete random QR code information',
-    operation_id='deleteRandomLocation',
+    operation_id='random_location_delete',
     tags=['locations'],
     responses={
         status.HTTP_204_NO_CONTENT: '',
@@ -120,12 +122,13 @@ def test_delete(request):
     location_qr_code.delete()
     return Response(status=204)
 
+
 class LocationIdAPIView(APIView):
     renderer_classes = [JSONRenderer]
 
     @swagger_auto_schema(
         operation_summary='read QR code information of corresponding id',
-        operation_id='getLocation',
+        operation_id='location_get',
         tags=['locationId'],
         responses={
             status.HTTP_201_CREATED: openapi.Schema(
@@ -152,7 +155,7 @@ class LocationIdAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary='create QR code information of corresponding id',
-        operation_id='createLocation',
+        operation_id='location_create',
         tags=['locationId'],
         responses={
             status.HTTP_201_CREATED: openapi.Schema(
@@ -174,8 +177,8 @@ class LocationIdAPIView(APIView):
         presence = LocationQrCode.objects.filter(id=location_id)
         if len(presence) != 0:
             return JsonResponse({'error': 'The id is preoccupied'}, status=409)
-        lat = ( random() - 0.5 ) * 90
-        lon = ( random() - 0.5 ) * 180
+        lat = (random() - 0.5) * 90
+        lon = (random() - 0.5) * 180
         location_qr_code = LocationQrCode(latitude=lat, longitude=lon, id=location_id)
         location_qr_code.save()
         serializer = LocationQrCodeSerializer(location_qr_code)
@@ -183,7 +186,7 @@ class LocationIdAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary='update QR code information of corresponding id',
-        operation_id='updateLocation',
+        operation_id='location_update',
         tags=['locationId'],
         responses={
             status.HTTP_201_CREATED: openapi.Schema(
@@ -214,7 +217,7 @@ class LocationIdAPIView(APIView):
 
     @swagger_auto_schema(
         operation_summary='delete QR code information of corresponding id',
-        operation_id='deleteLocation',
+        operation_id='location_delete',
         tags=['locationId'],
         responses={
             status.HTTP_204_NO_CONTENT: '',
