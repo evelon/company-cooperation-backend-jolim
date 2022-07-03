@@ -1,9 +1,12 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 import json
 from rest_framework_simplejwt.tokens import RefreshToken
+from urllib.parse import urlencode
+
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -12,17 +15,25 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
-class TestAccountsViews(TestCase):
+class TestAccountViews(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestAccountViews, cls).setUpClass()
+        get_user_model().objects.create_user(
+            username='verified',
+            password='password',
+            email='verified@example.com',
+            is_active=True,
+            verified=True,
+        )
+        get_user_model().objects.create_user(
+            username='unverified',
+            password='password',
+            email='unverified@example.com',
+        )
+
     def setUp(self):
         self.client = APIClient()
-        get_user_model().objects.create_user(
-            username='username',
-            password='password',
-            email='email@example.com'
-        )
-        user = get_user_model().objects.get(username='username')
-        self.tokens = get_tokens_for_user(user)
-        self.client.credentials(HTTP_AUTHORIZATION='bearer ' + self.tokens['access'])
 
     def test_registration_success(self):
         username = 'mockuser'
@@ -67,6 +78,47 @@ class TestAccountsViews(TestCase):
         self.assertIn('username', content)
         self.assertIn('password', content)
         self.assertIn('email', content)
+
+    def test_resend_verification_success(self):
+        response = self.client.post('/accounts/resend?username=unverified')
+
+        self.assertEqual(response.status_code, 204)
+
+    def test_resend_verification_failure(self):
+        response = self.client.post('/accounts/resend?username=verified')
+
+        self.assertEqual(response.status_code, 409)
+
+    def test_verification_success(self):
+        user = get_user_model().objects.get(username='unverified')
+        token = default_token_generator.make_token(user)
+        request_uri = '/accounts/verify?' + urlencode({'user': user.id, 'token': token})
+
+        response = self.client.get(request_uri)
+        self.assertEqual(response.status_code, 200)
+
+    def test_verification_failure(self):
+        user = get_user_model().objects.get(username='verified')
+        token = default_token_generator.make_token(user)
+        request_uri = '/accounts/verify?' + urlencode({'user': user.id, 'token': token})
+
+        response = self.client.get(request_uri)
+        self.assertEqual(response.status_code, 409)
+
+
+class TestTokenViews(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        get_user_model().objects.create_user(
+            username='username',
+            password='password',
+            email='email@example.com',
+            verified=True,
+            is_active=True,
+        )
+        user = get_user_model().objects.get(username='username')
+        self.tokens = get_tokens_for_user(user)
+        self.client.credentials(HTTP_AUTHORIZATION='bearer ' + self.tokens['access'])
 
     def test_issue_token_success(self):
         username = 'username'
