@@ -9,7 +9,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     ])
     password = serializers.CharField(min_length=8, max_length=36, write_only=True)
     email = serializers.EmailField(validators=[
-        UniqueValidator(queryset=get_user_model().objects.all(), message="email already exists")
+        UniqueValidator(queryset=get_user_model().objects.all(), message="Email already exists")
     ])
 
     def create(self, validated_data):

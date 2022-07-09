@@ -14,6 +14,5 @@ urlpatterns = [
     path('resend', ResendVerificationAPIView.as_view(), name='verification_resend'),
     path('verify', VerifyEmailAPIView.as_view(), name='email_verify'),
     path('token', DecoratedTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/verify', DecoratedTokenVerifyView.as_view(), name='token_verify'),
     path('token/refresh', DecoratedTokenRefreshView.as_view(), name='token_refresh'),
 ]

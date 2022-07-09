@@ -30,15 +30,18 @@ from urllib.parse import urlencode
             type=openapi.TYPE_OBJECT,
             properties={
                 'id': openapi.Schema(
-                    type=openapi.TYPE_STRING
+                    type=openapi.TYPE_STRING,
+                    example="3",
                 ),
                 'username': openapi.Schema(
                     type=openapi.TYPE_STRING,
                     maxLength=24,
                     minLength=4,
+                    example="username",
                 ),
                 'email': openapi.Schema(
-                    type=openapi.TYPE_STRING
+                    type=openapi.TYPE_STRING,
+                    example="email@example.com",
                 )
             },
             required=['id', 'username', 'email']
@@ -51,15 +54,16 @@ class CreateUserAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        response = super().create(request, *args, **kwargs)
+        try:
+            user = get_user_model().objects.get(id=response.data["id"])
+        except ObjectDoesNotExist:
+            return Response(data={"error": "Failed to create a user"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         token = default_token_generator.make_token(user)
         verification_url = settings.SERVERNAME + '/accounts/verify?' + urlencode({'user': user.id, 'token': token})
         email = EmailMessage('Test Email Verification', verification_url, to=[user.email])
         email.send()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return response
 
 
 class ResendVerificationAPIView(APIView):
@@ -82,7 +86,8 @@ class ResendVerificationAPIView(APIView):
                 type=openapi.TYPE_OBJECT,
                 properties={
                     'error': openapi.Schema(
-                        type=openapi.TYPE_STRING
+                        type=openapi.TYPE_STRING,
+                        example='no username provided in query'
                     )
                 },
                 required=['error']
@@ -91,7 +96,8 @@ class ResendVerificationAPIView(APIView):
                 type=openapi.TYPE_OBJECT,
                 properties={
                     'error': openapi.Schema(
-                        type=openapi.TYPE_STRING
+                        type=openapi.TYPE_STRING,
+                        example='User has already verified email',
                     )
                 },
                 required=['error']
@@ -149,7 +155,8 @@ class VerifyEmailAPIView(APIView):
                 type=openapi.TYPE_OBJECT,
                 properties={
                     'error': openapi.Schema(
-                        type=openapi.TYPE_STRING
+                        type=openapi.TYPE_STRING,
+                        example="No 'user' or 'token' in query"
                     )
                 },
                 required=['error']
@@ -158,7 +165,8 @@ class VerifyEmailAPIView(APIView):
                 type=openapi.TYPE_OBJECT,
                 properties={
                     'error': openapi.Schema(
-                        type=openapi.TYPE_STRING
+                        type=openapi.TYPE_STRING,
+                        example='User is already verified'
                     )
                 },
                 required=['error']
@@ -236,6 +244,31 @@ class DecoratedTokenRefreshView(TokenRefreshView):
     @swagger_auto_schema(
         responses={
             status.HTTP_200_OK: TokenRefreshResponseSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'refresh': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example='This field is required.',
+                        )
+                    )
+                }
+            ),
+            status.HTTP_401_UNAUTHORIZED: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'detail': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='Token is invalid or expired',
+                    ),
+                    'code': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='token_not_valid',
+                    )
+                }
+            )
         }
     )
     def post(self, request, *args, **kwargs):
@@ -254,6 +287,31 @@ class DecoratedTokenVerifyView(TokenVerifyView):
     @swagger_auto_schema(
         responses={
             status.HTTP_200_OK: TokenVerifyResponseSerializer,
+            status.HTTP_400_BAD_REQUEST: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'token': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example='This field is required.',
+                        )
+                    )
+                }
+            ),
+            status.HTTP_401_UNAUTHORIZED: openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'detail': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='Token is invalid or expired',
+                    ),
+                    'code': openapi.Schema(
+                        type=openapi.TYPE_STRING,
+                        example='token_not_valid',
+                    )
+                }
+            )
         }
     )
     def post(self, request, *args, **kwargs):

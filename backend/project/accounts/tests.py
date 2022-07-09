@@ -146,18 +146,6 @@ class TestTokenViews(TestCase):
         }, format='json')
         self.assertEqual(response.status_code, 401)
 
-    def test_token_verify_success(self):
-        response = self.client.post('/accounts/token/verify', {
-            'token': self.tokens['access']
-        }, format='json')
-        self.assertEqual(response.status_code, 200)
-
-    def test_token_verify_failure(self):
-        response = self.client.post('/accounts/token/verify', {
-            'token': 'no_meaning'
-        })
-        self.assertEqual(response.status_code, 401)
-
     def test_token_refresh_success(self):
         response = self.client.post('/accounts/token/refresh', {
             'refresh': self.tokens['refresh']
