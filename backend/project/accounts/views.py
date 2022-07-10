@@ -19,7 +19,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.tokens import default_token_generator
 from config import settings
 from urllib.parse import urlencode
-
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 @method_decorator(name='post', decorator=swagger_auto_schema(
     operation_summary='create an user account',
