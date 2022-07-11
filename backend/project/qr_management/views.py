@@ -42,9 +42,15 @@ LocationQrCodeSchema = openapi.Schema(
 )
 
 
+class OwnerCreateModelMixin(mixins.CreateModelMixin):
+    def create(self, request, *args, **kwargs):
+        request.data['owner'] = request.auth['user_id']
+        return super().create(request, *args, **kwargs)
+
+
 class RandomLocationAPIView(
+    OwnerCreateModelMixin,
     generics.GenericAPIView,
-    mixins.CreateModelMixin,
     mixins.ListModelMixin,
 ):
     queryset = Location.objects.all()
@@ -142,6 +148,6 @@ class RandomLocationDeleteAPIView(APIView):
     operation_id='location_delete',
     tags=['locationId'],
 ))
-class LocationViewSet(viewsets.ModelViewSet):
+class LocationViewSet(OwnerCreateModelMixin, viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer

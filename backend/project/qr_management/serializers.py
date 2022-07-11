@@ -17,7 +17,7 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = '__all__'
-        read_only_fields = ['owner', 'validity']
+        read_only_fields = ['validity']
 
 
 def get_random_latitude():
@@ -46,4 +46,4 @@ class RandomLocationSerializer(LocationSerializer):
     class Meta:
         model = Location
         fields = '__all__'
-        read_only_fields = ['latitude', 'longitude', 'owner', 'validity']
+        read_only_fields = ['latitude', 'longitude', 'validity']

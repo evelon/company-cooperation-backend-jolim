@@ -3,7 +3,12 @@ from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
 from .models import Location
 import json
-from uuid import UUID
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+def get_access_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return str(refresh.access_token)
 
 
 class TestLocationsView(TestCase):
@@ -14,9 +19,12 @@ class TestLocationsView(TestCase):
         get_user_model().objects.create_user(
             username='username',
             password='password',
-            email='email@example.com'
+            email='email@example.com',
+            is_active=True,
+            verified=True,
         )
         user = get_user_model().objects.get(username='username')
+        self.token = get_access_tokens_for_user(user)
         self.client.force_authenticate(user=user)
 
     def qr_code_content_validator(self, content):
@@ -35,7 +43,11 @@ class TestLocationsView(TestCase):
             self.qr_code_content_validator(data[0])
 
     def test_post(self):
-        response = self.client.post('/qr-code/locations/random')
+        new_client = APIClient()
+        auth_headers = {
+            'HTTP_AUTHORIZATION': f'Bearer {self.token}',
+        }
+        response = new_client.post('/qr-code/locations/random', **auth_headers)
 
         self.assertEqual(response.status_code, 201)
         content = json.loads(response.content)
