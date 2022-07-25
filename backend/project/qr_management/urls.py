@@ -7,6 +7,7 @@ urlpatterns = [
         'post': 'create',
     })),
     path('locations/<uuid:pk>', views.LocationViewSet.as_view({
+        'get': 'retrieve',
         'patch': 'partial_update',
         'delete': 'destroy',
     })),

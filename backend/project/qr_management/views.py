@@ -42,9 +42,31 @@ LocationQrCodeSchema = openapi.Schema(
 )
 
 
+class OwnerCreateModelMixin(mixins.CreateModelMixin):
+    def create(self, request, *args, **kwargs):
+        request.data['owner'] = request.auth['user_id']
+        return super().create(request, *args, **kwargs)
+
+
+class OwnerUpdateModelMixin(mixins.UpdateModelMixin):
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if (instance.owner is None) or (instance.owner.id != request.auth['user_id']):
+            return Response({'detail': 'The user is not the owner'}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+
+
+class OwnerDeleteModelMixin(mixins.DestroyModelMixin):
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if (instance.owner is None) or (instance.owner.id != request.auth['user_id']):
+            return Response({'detail': 'The user is not the owner'}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
+
+
 class RandomLocationAPIView(
+    OwnerCreateModelMixin,
     generics.GenericAPIView,
-    mixins.CreateModelMixin,
     mixins.ListModelMixin,
 ):
     queryset = Location.objects.all()
@@ -142,6 +164,11 @@ class RandomLocationDeleteAPIView(APIView):
     operation_id='location_delete',
     tags=['locationId'],
 ))
-class LocationViewSet(viewsets.ModelViewSet):
+class LocationViewSet(
+    OwnerCreateModelMixin,
+    OwnerUpdateModelMixin,
+    OwnerDeleteModelMixin,
+    viewsets.ModelViewSet
+):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
