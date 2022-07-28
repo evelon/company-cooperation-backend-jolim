@@ -19,6 +19,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from config import settings
+from config.views import hello_world
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -34,6 +35,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('', hello_world),
     path('admin/', admin.site.urls),
     path('qr-code/', include('qr_management.urls'), name='qr-code'),
     path('accounts/', include('accounts.urls'), name='accounts'),
