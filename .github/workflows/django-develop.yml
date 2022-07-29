@@ -19,7 +19,8 @@ jobs:
     steps:
     - name: Test secrets
       run: |
-        echo ${{ secrets.TEST_SECRET }} | rev
+        echo $DJANGO_SECRET_KEY | rev
+        echo ${{ secrets.DJANGO_SERCET_KEY }} | rev
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
