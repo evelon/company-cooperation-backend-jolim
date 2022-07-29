@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "test" ]
+    branches: [ "main", "develop", "test" ]
   pull_request:
     branches: [ "main" ]
 
@@ -27,10 +27,6 @@ jobs:
         python-version: [3.9.1]
 
     steps:
-    - name: Test secrets
-      run: |
-        echo $DJANGO_SECRET_KEY | rev
-        echo ${{ secrets.DJANGO_SERCET_KEY }} | rev
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
@@ -44,7 +40,20 @@ jobs:
       run: |
         python backend/project/manage.py test
 
-#  deploy:
-#    needs: build
-#    
-#    runs-on: ubuntu-18.04
+  deploy-test:
+    needs: build
+    if: |
+      github.ref == 'refs/heads/test' &&
+      github.event_name == 'push'
+    runs-on: ubuntu-18.04
+    steps:
+      - name: executing remote ssh commands using key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USERNAME }}
+          password: ${{ secrets.DEV_PASSWORD }}
+          key: ${{ secrets.DEV_KEY }}
+          port: ${{ secrets.DEV_PORT }}
+          script: |
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S /tmp/start.sh
