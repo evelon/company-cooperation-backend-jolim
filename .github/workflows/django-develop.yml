@@ -55,4 +55,4 @@ jobs:
           password: ${{ secrets.DEV_PASSWORD }}
           port: ${{ secrets.DEV_PORT }}
           script: |
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S /tmp/start.sh
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S env "PATH=$PATH" /tmp/start.sh
