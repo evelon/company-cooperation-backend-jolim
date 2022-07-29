@@ -22,7 +22,7 @@ jobs:
       MARIADB_USER: ${{ secrets.MARIADB_USER }}
     
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         python-version: [3.9.1]
 
