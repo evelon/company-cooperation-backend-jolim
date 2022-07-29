@@ -2,24 +2,25 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
   build:
     
-    env:
-      MARIADB_USER: ${{ secrets.TEST_MARIADB_USER }}
-      MARIADB_PASSWORD: ${{ secrets. TEST_MARIADB_PASSWORD }}
-      MARIADB_DATABASE: ${{ secrets. MARIADB_DATABASE }}
-      DATABASE_HOST: ${{ secrets.TEST_MARIADB_SERVER }}
-      DJANGO_SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
-      HOST_SERVERNAME: http://localhost:8000
-      DEBUG: FALSE
-      HOST_IP: 0.0.0.0
-      
     runs-on: ubuntu-18.04
+    environment: test_environment
+    env:
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DEBUG: ${{ secrets.DEBUG }}
+      HOST_IP: ${{ secrets.HOST_IP }}
+      HOST_SERVERNAME: ${{ secrets.HOST_SERVERNAME }}
+      MARIADB_DATABASE: ${{ secrets.MARIADB_DATABASE }}
+      MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD }}
+      MARIADB_USER: ${{ secrets.MARIADB_USER }}
+    
     strategy:
       max-parallel: 4
       matrix:
@@ -39,7 +40,19 @@ jobs:
       run: |
         python backend/project/manage.py test
 
-#  deploy:
-#    needs: build
-#    
-#    runs-on: ubuntu-18.04
+  deploy-dev:
+    needs: build
+    if: |
+      github.ref == 'refs/heads/develop' &&
+      github.event_name == 'push'
+    runs-on: ubuntu-18.04
+    steps:
+      - name: executing remote ssh commands using key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USERNAME }}
+          password: ${{ secrets.DEV_PASSWORD }}
+          port: ${{ secrets.DEV_PORT }}
+          script: |
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S /tmp/start.sh
