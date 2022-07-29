@@ -8,7 +8,17 @@ on:
 
 jobs:
   build:
-
+    
+    env:
+      MARIADB_USER: ${{ secrets.TEST_MARIADB_USER }}
+      MARIADB_PASSWORD: ${{ secrets. TEST_MARIADB_PASSWORD }}
+      MARIADB_DATABASE: ${{ secrets. MARIADB_DATABASE }}
+      DATABASE_HOST: ${{ secrets.TEST_MARIADB_SERVER }}
+      DJANGO_SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
+      HOST_SERVERNAME: http://localhost:8000
+      DEBUG: FALSE
+      HOST_IP: 0.0.0.0
+      
     runs-on: ubuntu-18.04
     strategy:
       max-parallel: 4
