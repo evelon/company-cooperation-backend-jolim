@@ -6,4 +6,4 @@ from rest_framework.permissions import AllowAny
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def hello_world(request):
-    return Response({'message': 'Hello, world!'})
+    return Response({'msg': 'Hello, world!'})
