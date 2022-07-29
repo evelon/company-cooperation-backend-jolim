@@ -13,6 +13,14 @@ jobs:
     environment: test_environment
     env:
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+      DEBUG: ${{ secrets.DEBUG }}
+      HOST_IP: ${{ secrets.HOST_IP }}
+      HOST_SERVERNAME: ${{ secrets.HOST_SERVERNAME }}
+      MARIADB_DATABASE: ${{ secrets.MARIADB_DATABASE }}
+      MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD }}
+      MARIADB_USER: ${{ secrets.MARIADB_USER }}
+    
     strategy:
       max-parallel: 4
       matrix:
