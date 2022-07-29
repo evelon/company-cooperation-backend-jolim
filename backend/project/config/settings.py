@@ -9,14 +9,14 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
-import environ
+import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
+
+load_dotenv('./.env')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,12 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (env('DEBUG') == 'TRUE')
+DEBUG = (os.environ.get('DEBUG') == 'TRUE')
 
-ALLOWED_HOSTS = [env('HOST_IP'), '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [os.environ.get('HOST_IP'), '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -88,10 +88,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # mysqlclient librarly 설치
-        'NAME': env('MARIADB_DATABASE'),
-        'USER': env('MARIADB_USER'),
-        'PASSWORD': env('MARIADB_PASSWORD'), # mariaDB 설치 시 입력한 root 비밀번호 입력
-        'HOST': env('DATABASE_HOST'),
+        'NAME': os.environ.get('MARIADB_DATABASE'),
+        'USER': os.environ.get('MARIADB_USER'),
+        'PASSWORD': os.environ.get('MARIADB_PASSWORD'), # mariaDB 설치 시 입력한 root 비밀번호 입력
+        'HOST': os.environ.get('DATABASE_HOST'),
         'PORT': 3306,
     }
 }
@@ -173,4 +173,4 @@ SWAGGER_SETTINGS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-SERVERNAME = env('HOST_SERVERNAME')
+SERVERNAME = os.environ.get('HOST_SERVERNAME')
