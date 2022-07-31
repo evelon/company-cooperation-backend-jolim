@@ -56,3 +56,16 @@ jobs:
           port: ${{ secrets.DEV_PORT }}
           script: |
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S env "PATH=$PATH" /tmp/start.sh
+  
+  deploy:
+    needs: build
+    if: |
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push'
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: pushing to the sourcecommit repository
+      run: |
+        git remote add sourcecommit ${{ secrets.SOURCECOMMIT_REPO }}
+        git push sourcecommit main
