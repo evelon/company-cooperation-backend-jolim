@@ -31,6 +31,7 @@ DEBUG = (os.getenv('DEBUG') == 'TRUE')
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+ALLOWED_HOSTS = [os.environ.get('HOST_IP'), '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -127,7 +128,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
