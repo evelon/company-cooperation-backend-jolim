@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <form method="post" action="{% url 'locations:create' %}">
+        {% csrf_token %}
+        {% if created %}
+            위치 정보가 생성되었습니다.
+        {% endif %}
+        {% include "form_errors.html" %}
+        <div>
+            <label for="latitude">위도</label>
+            <input type="number" step="any" min="-180" max="180" name="latitude" id="latitude"
+                   value="{{ form.latitude.value|default_if_none:'' }}">
+        </div>
+        <div>
+            <label for="longitude">경도</label>
+            <input type="number" step="any" min="-90" max="90" name="longitude" id="longitude"
+                   value="{{ form.longitude.value|default_if_none:'' }}">
+        </div>
+        <button type="submit">등록</button>
+    </form>
+</div>
+{% endblock %}

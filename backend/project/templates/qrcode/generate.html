@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    <div>
+        {{ svg|safe }}<br>
+    <ul>
+        <li>id: {{ location.id }}</li>
+        <li>위도: {{ location.latitude }}</li>
+        <li>경도: {{ location.longitude }}</li>
+    </ul>
+    </div>
+    <div>
+        <a href="{% url 'locations:list' %}">리스트로 돌아가기</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if location_list %}
+        <ol>
+        {% for location in location_list %}
+            <li>생성일자: {{ location.created_at }}, 위도: {{ location.latitude }}, 경도: {{ location.longitude }}
+                <a href="{% url 'locations:generate' location.id %}">QRcode</a>
+                <a href="{% url 'locations:delete' location.id %}">삭제</a>
+            </li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>저장한 위치 정보가 없습니다.</p>
+    {% endif %}
+{% endblock %}
