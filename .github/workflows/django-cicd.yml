@@ -57,7 +57,7 @@ jobs:
           script: |
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S env "PATH=$PATH" /tmp/start.sh
   
-  deploy-dev:
+  deploy:
     needs: build
     if: |
       github.ref == 'refs/heads/main' &&
